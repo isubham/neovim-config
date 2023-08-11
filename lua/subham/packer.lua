@@ -57,6 +57,23 @@ use {
   }
 }
 
+-- tree based file manager
+
+use {
+  'nvim-tree/nvim-tree.lua',
+  requires = {
+    'nvim-tree/nvim-web-devicons', -- optional
+  },
+}
+
+-- org mode 
+use {'nvim-treesitter/nvim-treesitter'}
+
+use {'nvim-orgmode/orgmode', config = function()
+  require('orgmode').setup{}
+end
+}
+
 end)
 
 
