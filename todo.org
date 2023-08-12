@@ -3,3 +3,9 @@ TODO
 * NVIm Tree 
 - [ ] auto open when nvim launched
 
+
+* Icon support
+
+  just download any font from 
+  https://github.com/ryanoasis/nerd-fonts/releases
+

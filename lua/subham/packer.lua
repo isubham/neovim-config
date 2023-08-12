@@ -67,12 +67,18 @@ use {
 }
 
 -- org mode 
-use {'nvim-treesitter/nvim-treesitter'}
 
 use {'nvim-orgmode/orgmode', config = function()
   require('orgmode').setup{}
 end
 }
+
+
+-- buffer line 
+use {'akinsho/bufferline.nvim',
+    tag = "*",
+    requires = 'nvim-tree/nvim-web-devicons'
+ }
 
 end)
 
