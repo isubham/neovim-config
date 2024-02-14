@@ -26,6 +26,10 @@ bufferline.setup{
         show_close_icon = true,
         show_tab_indicators = true,
 
+        indicator = {
+                style = 'underline',
+        },
+
         numbers = function(opts)
             return string.format('%s', opts.lower(opts.ordinal))
         end,
