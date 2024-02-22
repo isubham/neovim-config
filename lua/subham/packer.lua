@@ -15,8 +15,8 @@ return require('packer').startup(function(use)
   }
 
   -- colorscheme
-  use({ 
-	'rose-pine/neovim', 
+  use({
+	'rose-pine/neovim',
 	as = 'rose-pine',
 	config = function()
 		vim.cmd('colorscheme rose-pine')
@@ -80,7 +80,21 @@ use {'akinsho/bufferline.nvim',
     requires = 'nvim-tree/nvim-web-devicons'
  }
 
+-- powerline
+
+use {
+  'nvim-lualine/lualine.nvim',
+  requires = { 'nvim-tree/nvim-web-devicons', opt = true }
+}
+
+-- dap mode for debugging
+--
+use {
+    'mfussenegger/nvim-dap'
+}
+
 end)
+
 
 
 
