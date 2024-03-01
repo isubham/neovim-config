@@ -8,6 +8,5 @@ vim.keymap.set('n', '<leader>ps', function()
 
 end)
 
-	
-	
+vim.keymap.set('n', '<leader>fw', builtin.live_grep, {})
 
