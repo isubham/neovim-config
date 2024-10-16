@@ -20,19 +20,19 @@ bufferline.setup{
                 enabled = true,
                 delay = 100,
                 reveal = {'close'}
-            },
+        },
 
-        show_buffer_close_icons = true,
-        show_close_icon = true,
+        show_buffer_close_icons = false,
+        show_close_icon = false,
         show_tab_indicators = true,
 
         indicator = {
                 style = 'underline',
         },
 
-        numbers = function(opts)
-            return string.format('%s', opts.lower(opts.ordinal))
-        end,
+        -- numbers = function(opts)
+        --     return string.format('%s', opts.ordinal)
+        -- end
 
 
     }

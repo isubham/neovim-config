@@ -2,10 +2,9 @@ local lsp = require("lsp-zero")
 
 lsp.preset("recommended")
 
-lsp.ensure_installed({
-  'tsserver',
-  'rust_analyzer',
-})
+-- lsp.ensure_installed({
+--   'tsserver',
+-- })
 
 -- Fix Undefined global 'vim'
 lsp.nvim_workspace()
@@ -37,8 +36,8 @@ lsp.set_preferences({
     }
 })
 
-lsp.on_attach(function(client, bufnr)
-  local opts = {buffer = bufnr, remap = false}
+lsp.on_attach(function(client, cBuffer)
+  local opts = {buffer = cBuffer, remap = false}
 
   vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
   vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
@@ -58,3 +57,18 @@ vim.diagnostic.config({
     virtual_text = true
 })
 
+
+--[[
+local nvim_lsp = require('lspconfig')
+
+nvim_lsp.denols.setup {
+  -- on_attach = on_attach,
+  root_dir = nvim_lsp.util.root_pattern("deno.json", "deno.jsonc"),
+}
+
+nvim_lsp.tsserver.setup {
+  -- on_attach = on_attach,
+  root_dir = nvim_lsp.util.root_pattern("package.json"),
+  single_file_support = false
+}
+]]

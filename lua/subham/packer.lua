@@ -20,7 +20,6 @@ return require('packer').startup(function(use)
 	as = 'rose-pine',
 	config = function()
 		vim.cmd('colorscheme rose-pine')
-
 	end
 })
 
@@ -29,8 +28,6 @@ use( 'nvim-treesitter/nvim-treesitter', {run= ':TSUpdate'})
 -- playground
 use('nvim-treesitter/playground')
 
--- file switching
-use('theprimeagen/harpoon')
 
 use('mbbill/undotree')
 
@@ -45,7 +42,7 @@ use {
     {                                      -- Optional
       'williamboman/mason.nvim',
       run = function()
-        pcall(vim.cmd, 'MasonUpdate')
+        vim.cmd('MasonUpdate')
       end,
     },
     {'williamboman/mason-lspconfig.nvim'}, -- Optional
@@ -58,7 +55,6 @@ use {
 }
 
 -- tree based file manager
-
 use {
   'nvim-tree/nvim-tree.lua',
   requires = {
@@ -67,7 +63,6 @@ use {
 }
 
 -- org mode 
-
 use {'nvim-orgmode/orgmode', config = function()
   require('orgmode').setup{}
 end
@@ -81,7 +76,6 @@ use {'akinsho/bufferline.nvim',
  }
 
 -- powerline
-
 use {
   'nvim-lualine/lualine.nvim',
   requires = { 'nvim-tree/nvim-web-devicons', opt = true }
@@ -93,7 +87,14 @@ use {
     'mfussenegger/nvim-dap'
 }
 
+
+-- deno 
+-- use {
+--   'neovim/nvim-lspconfig'
+-- }
+
 end)
+
 
 
 

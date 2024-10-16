@@ -18,16 +18,6 @@ vim.keymap.set("n", "<leader>svwm", function()
     require("vim-with-me").StopVimWithMe()
 end)
 
--- greatest remap ever
-vim.keymap.set("x", "<leader>p", [["_dP]])
-
----- next greatest remap ever : asbjornHaland
-vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
-vim.keymap.set("n", "<leader>Y", [["+Y]])
-
-vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
-
--- This is going to get me cancelled
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
 vim.keymap.set("n", "Q", "<nop>")
@@ -49,21 +39,4 @@ vim.keymap.set("n", "<leader><leader>", function()
     vim.cmd("so")
 end)
 
-vim.keymap.set("n", "<leader>n", function ()
-vim.cmd("NvimTreeToggle")
-end)
-
-
---- bufferline mapping
-vim.keymap.set("n", "<leader>b", function()
-    vim.cmd("BufferLinePick")
-end)
-
-vim.keymap.set("n", "<leader>h", function()
-    vim.cmd("BufferLineCyclePrev")
-end)
-
-vim.keymap.set("n", "<leader>l", function()
-    vim.cmd("BufferLineCycleNext")
-end)
 
