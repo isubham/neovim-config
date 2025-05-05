@@ -92,6 +92,19 @@ use {
 -- use {
 --   'neovim/nvim-lspconfig'
 -- }
+--
+--
+-- yazi
+use {
+  "mikavilpas/yazi.nvim",
+  requires = {
+    "nvim-lua/plenary.nvim",
+    "MunifTanjim/nui.nvim"
+  },
+  config = function()
+    require("yazi").setup()
+  end
+}
 
 end)
 
