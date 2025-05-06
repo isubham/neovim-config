@@ -1,6 +1,5 @@
 
 require("subham.remap.base")
-require("subham.remap.nvim-tree")
 require("subham.remap.bufferline")
 
 

@@ -9,7 +9,7 @@ return require('packer').startup(function(use)
 
   -- fuzzy search
   use {
-	'nvim-telescope/telescope.nvim', tag = '0.1.2',
+	'nvim-telescope/telescope.nvim', tag = '0.1.8',
   	-- or                   , branch = '0.1.x',
   	requires = { {'nvim-lua/plenary.nvim'} }
   }
@@ -54,13 +54,6 @@ use {
   }
 }
 
--- tree based file manager
-use {
-  'nvim-tree/nvim-tree.lua',
-  requires = {
-    'nvim-tree/nvim-web-devicons', -- optional
-  },
-}
 
 -- org mode 
 use {'nvim-orgmode/orgmode', config = function()
@@ -81,18 +74,6 @@ use {
   requires = { 'nvim-tree/nvim-web-devicons', opt = true }
 }
 
--- dap mode for debugging
---
-use {
-    'mfussenegger/nvim-dap'
-}
-
-
--- deno 
--- use {
---   'neovim/nvim-lspconfig'
--- }
---
 --
 -- yazi
 use {
@@ -109,6 +90,9 @@ use {
 end)
 
 
+
+-- TODO dap mode for debugging
+--
 
 
 

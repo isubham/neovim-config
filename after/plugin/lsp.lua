@@ -43,8 +43,6 @@ lsp.on_attach(function(client, cBuffer)
 
   vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
   vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-  vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-  vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
 
   vim.keymap.set("n", "<leader>lm", function() vim.lsp.buf.hover() end, opts)
   vim.keymap.set("n", "<leader>la", function() vim.lsp.buf.code_action() end, opts)
@@ -59,19 +57,3 @@ vim.diagnostic.config({
   virtual_text = true
 })
 
-
--- deno configuration
---[[
-local nvim_lsp = require('lspconfig')
-
-nvim_lsp.denols.setup {
-  -- on_attach = on_attach,
-  root_dir = nvim_lsp.util.root_pattern("deno.json", "deno.jsonc"),
-}
-
-nvim_lsp.tsserver.setup {
-  -- on_attach = on_attach,
-  root_dir = nvim_lsp.util.root_pattern("package.json"),
-  single_file_support = false
-}
-]]
