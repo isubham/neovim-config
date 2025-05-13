@@ -74,6 +74,17 @@ use {
   requires = { 'nvim-tree/nvim-web-devicons', opt = true }
 }
 
+-- nightowl
+--
+use {
+  "EdenEast/nightfox.nvim",
+  as = 'nightfox',
+	config = function()
+		vim.cmd('colorscheme nightfox')
+	end
+
+}
+
 --
 -- yazi
 use {
@@ -93,6 +104,7 @@ end)
 
 -- TODO dap mode for debugging
 --
+
 
 
 
