@@ -8,7 +8,7 @@ vim.keymap.set('n', '<leader>fw', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>b', function()
 
   builtin.find_files {
-    cwd = vim.cmd("ls")
+    cwd = vim.cmd("buffers")
   }
 
 end)

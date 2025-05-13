@@ -85,6 +85,9 @@ use {
 
 }
 
+
+use {'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async'}
+
 --
 -- yazi
 use {
@@ -103,8 +106,9 @@ end)
 
 
 -- TODO dap mode for debugging
---
 
+
+-- code folding
 
 
 
