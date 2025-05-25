@@ -9,107 +9,113 @@ return require('packer').startup(function(use)
 
   -- fuzzy search
   use {
-	'nvim-telescope/telescope.nvim', tag = '0.1.8',
-  	-- or                   , branch = '0.1.x',
-  	requires = { {'nvim-lua/plenary.nvim'} }
+    'nvim-telescope/telescope.nvim', tag = '0.1.8',
+    -- or                   , branch = '0.1.x',
+    requires = { { 'nvim-lua/plenary.nvim' } }
   }
 
-  -- colorscheme
-  use({
-	'rose-pine/neovim',
-	as = 'rose-pine',
-	config = function()
-		vim.cmd('colorscheme rose-pine')
-	end
-})
+  use('nvim-treesitter/nvim-treesitter', { run = ':TSUpdate' })
 
-use( 'nvim-treesitter/nvim-treesitter', {run= ':TSUpdate'})
-
--- playground
-use('nvim-treesitter/playground')
+  -- playground
+  use('nvim-treesitter/playground')
 
 
-use('mbbill/undotree')
+  use('mbbill/undotree')
 
-use('tpope/vim-fugitive')
+  use('tpope/vim-fugitive')
 
-use {
-  'VonHeikemen/lsp-zero.nvim',
-  branch = 'v2.x',
-  requires = {
-    -- LSP Support
-    {'neovim/nvim-lspconfig'},             -- Required
-    {                                      -- Optional
-      'williamboman/mason.nvim',
-      run = function()
-        vim.cmd('MasonUpdate')
-      end,
-    },
-    {'williamboman/mason-lspconfig.nvim'}, -- Optional
+  use {
+    'VonHeikemen/lsp-zero.nvim',
+    branch = 'v2.x',
+    requires = {
+      -- LSP Support
+      { 'neovim/nvim-lspconfig' }, -- Required
+      {                            -- Optional
+        'williamboman/mason.nvim',
+        run = function()
+          vim.cmd('MasonUpdate')
+        end,
+      },
+      { 'williamboman/mason-lspconfig.nvim' }, -- Optional
 
-    -- Autocompletion
-    {'hrsh7th/nvim-cmp'},     -- Required
-    {'hrsh7th/cmp-nvim-lsp'}, -- Required
-    {'L3MON4D3/LuaSnip'},     -- Required
+      -- Autocompletion
+      { 'hrsh7th/nvim-cmp' },     -- Required
+      { 'hrsh7th/cmp-nvim-lsp' }, -- Required
+      { 'L3MON4D3/LuaSnip' },     -- Required
+    }
   }
-}
 
 
--- org mode 
-use {'nvim-orgmode/orgmode', config = function()
-  require('orgmode').setup{}
-end
-}
+  -- org mode
+  use { 'nvim-orgmode/orgmode', config = function()
+    require('orgmode').setup {}
+  end
+  }
 
 
--- buffer line 
-use {'akinsho/bufferline.nvim',
+  -- buffer line
+  use { 'akinsho/bufferline.nvim',
     tag = "*",
     requires = 'nvim-tree/nvim-web-devicons'
- }
+  }
 
--- powerline
-use {
-  'nvim-lualine/lualine.nvim',
-  requires = { 'nvim-tree/nvim-web-devicons', opt = true }
-}
+  -- powerline
+  use {
+    'nvim-lualine/lualine.nvim',
+    requires = { 'nvim-tree/nvim-web-devicons', opt = true }
+  }
 
--- nightowl
---
-use {
-  "EdenEast/nightfox.nvim",
-  as = 'nightfox',
-	config = function()
-		vim.cmd('colorscheme nightfox')
-	end
+  -- nightowl
+  --
+  use {
+    "EdenEast/nightfox.nvim",
+    as = 'nightfox',
+    config = function()
+      vim.cmd('colorscheme nightfox')
+    end
 
-}
+  }
 
+  -- code folding
+  use { 'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async' }
 
-use {'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async'}
+  --
+  -- yazi
+  use {
+    "mikavilpas/yazi.nvim",
+    requires = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim"
+    },
+    config = function()
+      require("yazi").setup()
+    end
+  }
 
---
--- yazi
-use {
-  "mikavilpas/yazi.nvim",
-  requires = {
-    "nvim-lua/plenary.nvim",
-    "MunifTanjim/nui.nvim"
-  },
-  config = function()
-    require("yazi").setup()
-  end
-}
-
+  -- code formatting
+  use({
+    "stevearc/conform.nvim",
+    config = function()
+      require("conform").setup({
+        formatters_by_ft = {
+          javascript = { "prettier" },
+          javascriptreact = { "prettier" },
+          typescript = { "prettier" },
+          typescriptreact = { "prettier" },
+          json = { "prettier" },
+          css = { "prettier" },
+          html = { "prettier" },
+          markdown = { "prettier" },
+        },
+        format_on_save = {
+          lsp_fallback = true,
+          timeout_ms = 500,
+        },
+      })
+    end,
+  })
 end)
 
 
 
 -- TODO dap mode for debugging
-
-
--- code folding
-
-
-
-
