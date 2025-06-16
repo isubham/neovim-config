@@ -14,6 +14,20 @@ return require('packer').startup(function(use)
     requires = { { 'nvim-lua/plenary.nvim' } }
   }
 
+  -- file navigation
+  use {
+    "mikavilpas/yazi.nvim",
+    requires = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim"
+    },
+    config = function()
+      require("yazi").setup()
+    end
+  }
+
+
+
   use('nvim-treesitter/nvim-treesitter', { run = ':TSUpdate' })
 
   -- playground
@@ -71,26 +85,13 @@ return require('packer').startup(function(use)
     "EdenEast/nightfox.nvim",
     as = 'nightfox',
     config = function()
-      vim.cmd('colorscheme nightfox')
+      vim.cmd('colorscheme carboxfox')
     end
 
   }
 
   -- code folding
   use { 'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async' }
-
-  --
-  -- yazi
-  use {
-    "mikavilpas/yazi.nvim",
-    requires = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim"
-    },
-    config = function()
-      require("yazi").setup()
-    end
-  }
 
   -- code formatting
   use({
