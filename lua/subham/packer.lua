@@ -84,10 +84,6 @@ return require('packer').startup(function(use)
   use {
     "EdenEast/nightfox.nvim",
     as = 'nightfox',
-    config = function()
-      vim.cmd('colorscheme carboxfox')
-    end
-
   }
 
   -- code folding
