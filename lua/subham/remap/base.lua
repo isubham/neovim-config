@@ -22,3 +22,25 @@ vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+
+
+function Map(mode, lhs, rhs, opts)
+  local options = { noremap = true, silent = true }
+  if opts then
+    options = vim.tbl_extend("force", options, opts)
+  end
+  vim.keymap.set(mode, lhs, rhs, options)
+end
+
+-- // pane switching ---
+-- @url https://medium.com/unixification/must-have-neovim-keymaps-51c283394070
+Map("n", "<leader>h", "<C-w>h")
+Map("n", "<leader>j", "<C-w>j")
+Map("n", "<leader>k", "<C-w>k")
+Map("n", "<leader>l", "<C-w>l")
+
+-- terminal
+Map("t", "<leader>h", "<cmd>wincmd h<CR>")
+Map("t", "<leader>j", "<cmd>wincmd j<CR>")
+Map("t", "<leader>k", "<cmd>wincmd k<CR>")
+Map("t", "<leader>l", "<cmd>wincmd l<CR>")
