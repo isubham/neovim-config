@@ -89,6 +89,14 @@ return require('packer').startup(function(use)
   -- code folding
   use { 'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async' }
 
+  -- nvim tree
+  use {
+    'nvim-tree/nvim-tree.lua',
+    requires = {
+      'nvim-tree/nvim-web-devicons', -- optional
+    },
+  }
+
   -- code formatting
   use({
     "stevearc/conform.nvim",
