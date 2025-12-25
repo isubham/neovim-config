@@ -1,3 +1,6 @@
+--[[
+]]
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -37,7 +40,6 @@ local function keyMaps()
   -- config reload
   vim.keymap.set("n", "<leader>r", function()
     vim.cmd("source ~/.config/nvim/init.lua")
-    vim.cmd('echo "config reloaded"')
   end)
 
   -- window split
@@ -224,8 +226,8 @@ end
 
 local function setupTreeSitter()
   --- treesitter config
-  require("nvim-treesitter.configs").setup {
-    ensure_installed = { "lua", "python", "javascript" }, -- languages
+  require("nvim-treesitter").setup {
+    ensure_installed = { "lua", "javascript", "typescript", "tsx", "go", "scss", "jsdoc" }, -- languages
     highlight = {
       enable = true,                                      -- enable TS-based highlighting
       additional_vim_regex_highlighting = false,
@@ -242,12 +244,177 @@ local function setupTreeSitter()
   }
 end
 
+
+local function setupYazi()
+  -- 1. Initialize the plugin (required even for manual installs)
+  require('yazi').setup({
+    open_for_directories = true,
+  })
+
+  -- 2. Your custom function
+  local function open_yazi()
+    require('yazi').yazi()
+  end
+
+  -- 3. The keymap
+  vim.keymap.set("n", "<leader>n", open_yazi, { desc = "Open Yazi" })
+end
+
+local function setupColorScheme()
+  require('nightfox').setup({
+    options = {
+      -- true black background for that M1/OLED look
+      transparent = false,
+      terminal_colors = true,
+      styles = {
+        comments = "italic",
+        keywords = "bold",
+        types = "italic,bold",
+      }
+    }
+  })
+
+  vim.cmd("colorscheme carbonfox")
+end
+
+local function setupDAP()
+
+  local dap = require('dap')
+
+  -- 1. Configure the Adapter
+  dap.adapters["pwa-node"] = {
+    type = "server",
+    host = "localhost",
+    port = "${port}",
+    executable = {
+      command = "node",
+      -- Path to the binary you just built
+      args = { os.getenv("HOME") .. "/js-debug/src/dapDebugServer.js", "${port}" },
+    }
+  }
+
+  -- 2. Configure the Language
+  for _, language in ipairs({ "typescript", "javascript", "typescriptreact" }) do
+    dap.configurations[language] = {
+      {
+        type = "pwa-node",
+        request = "launch",
+        name = "Launch file",
+        program = "${file}",
+        cwd = "${workspaceRoot}",
+      },
+      {
+        type = "pwa-node",
+        request = "attach",
+        name = "Attach",
+        processId = require'dap.utils'.pick_process,
+        cwd = "${workspaceRoot}",
+      }
+    }
+
+
+  end
+
+  dap.configurations.typescript = {
+    {
+      type = "pwa-node",
+      request = "attach",
+      name = "Attach to Bun",
+      -- Bun's default inspect port is 6499
+      address = "localhost",
+      port = 6499,
+      cwd = vim.fn.getcwd(),
+      sourceMaps = true,
+      protocol = "inspector",
+    }
+  }
+
+  -- Optional: Add this so JavaScript files can use the same config
+  dap.configurations.javascript = dap.configurations.typescript
+
+  -- 3. UI and Keymaps
+  require("nvim-dap-virtual-text").setup()
+  local dapui = require("dapui")
+  dapui.setup()
+
+  -- Auto-open UI when debugging starts
+  dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
+  dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
+
+  vim.keymap.set('n', '<F5>', function() dap.continue() end)
+  vim.keymap.set('n', '<F10>', function() dap.step_over() end)
+  vim.keymap.set('n', '<leader>db', function() dap.toggle_breakpoint() end)
+
+end
+
+local function setupLazy()
+
+  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+  if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+      "git",
+      "clone",
+      "--filter=blob:none",
+      "https://github.com/folke/lazy.nvim.git",
+      "--branch=stable",
+      lazypath,
+    })
+  end
+  vim.opt.rtp:prepend(lazypath)
+end
+
+local function installPackages()
+  require("lazy").setup({
+    -- 1. Theme
+    {
+      "EdenEast/nightfox.nvim",
+    },
+
+    -- 2. Syntax & Parsing
+    {
+      "nvim-treesitter/nvim-treesitter",
+      build = ":TSUpdate",
+      lazy = false,
+    },
+
+    -- 3. Fuzzy Finder
+    {
+      "nvim-telescope/telescope.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
+    },
+
+    -- 4. Debugging (DAP)
+    {
+      "mfussenegger/nvim-dap",
+      dependencies = {
+        "rcarriga/nvim-dap-ui",
+        "nvim-neotest/nvim-nio",
+        "theHamsta/nvim-dap-virtual-text",
+      },
+    },
+
+    -- 5. File Manager
+    {
+      "mikavilpas/yazi.nvim",
+      event = "VeryLazy",
+      opts = { open_for_directories = true },
+    },
+
+    { 'wakatime/vim-wakatime', lazy = false }
+  })
+end
+
 local function init()
   customizations()
   keyMaps()
+  setupLazy()
+  installPackages()
   setupLSP()
   setupTelescope()
   setupTreeSitter()
+  setupYazi()
+  setupColorScheme()
+  setupDAP()
 end
 
 init()
