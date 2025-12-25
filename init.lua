@@ -281,6 +281,9 @@ local function setupDAP()
 
   local dap = require('dap')
 
+  local vimDebugServerFullPath = { os.getenv("HOME") .. "/js-debug/out/src/vsDebugServer.js", "${port}" }
+  print(vimDebugServerFullPath)
+
   -- 1. Configure the Adapter
   dap.adapters["pwa-node"] = {
     type = "server",
@@ -289,31 +292,31 @@ local function setupDAP()
     executable = {
       command = "node",
       -- Path to the binary you just built
-      args = { os.getenv("HOME") .. "/js-debug/src/dapDebugServer.js", "${port}" },
+      args = { os.getenv("HOME") .. "/js-debug/src/nodeDebug.js", "${port}" },
     }
   }
 
   -- 2. Configure the Language
-  for _, language in ipairs({ "typescript", "javascript", "typescriptreact" }) do
-    dap.configurations[language] = {
-      {
-        type = "pwa-node",
-        request = "launch",
-        name = "Launch file",
-        program = "${file}",
-        cwd = "${workspaceRoot}",
-      },
-      {
-        type = "pwa-node",
-        request = "attach",
-        name = "Attach",
-        processId = require'dap.utils'.pick_process,
-        cwd = "${workspaceRoot}",
-      }
-    }
+  -- for _, language in ipairs({ "typescript", "javascript", "typescriptreact" }) do
+  --   dap.configurations[language] = {
+  --     {
+  --       type = "pwa-node",
+  --       request = "launch",
+  --       name = "Launch file",
+  --       program = "${file}",
+  --       cwd = "${workspaceRoot}",
+  --     },
+  --     {
+  --       type = "pwa-node",
+  --       request = "attach",
+  --       name = "Attach",
+  --       processId = require'dap.utils'.pick_process,
+  --       cwd = "${workspaceRoot}",
+  --     }
+  --   }
 
 
-  end
+  -- end
 
   dap.configurations.typescript = {
     {
@@ -330,7 +333,36 @@ local function setupDAP()
   }
 
   -- Optional: Add this so JavaScript files can use the same config
-  dap.configurations.javascript = dap.configurations.typescript
+  -- dap.configurations.javascript = dap.configurations.typescript
+
+  local function setupNodeDap()
+    dap.adapters.node2 = {
+      type = 'executable',
+      command = 'node',
+      args = {os.getenv('HOME') .. '/js-debug/out/src/nodeDebug.js'},
+    }
+    dap.configurations.javascript = {
+      {
+        name = 'Launch',
+        type = 'node2',
+        request = 'launch',
+        program = '${file}',
+        cwd = vim.fn.getcwd(),
+        sourceMaps = true,
+        protocol = 'inspector',
+        console = 'integratedTerminal',
+      },
+      {
+        -- For this to work you need to make sure the node process is started with the `--inspect` flag.
+        name = 'Attach to process',
+        type = 'node2',
+        request = 'attach',
+        processId = require'dap.utils'.pick_process,
+      },
+    }
+  end
+
+  setupNodeDap()
 
   -- 3. UI and Keymaps
   require("nvim-dap-virtual-text").setup()
@@ -341,9 +373,11 @@ local function setupDAP()
   dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
   dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
 
-  vim.keymap.set('n', '<F5>', function() dap.continue() end)
-  vim.keymap.set('n', '<F10>', function() dap.step_over() end)
-  vim.keymap.set('n', '<leader>db', function() dap.toggle_breakpoint() end)
+  vim.keymap.set('n', '<leader>dc', function() dap.continue() end)
+  vim.keymap.set('n', '<leader>dj', function() dap.step_over() end)
+  vim.keymap.set('n', '<leader>dl', function() dap.step_into() end)
+  vim.keymap.set('n', '<leader>dk', function() dap.step_out() end)
+  vim.keymap.set('n', '<leader>dh', function() dap.toggle_breakpoint() end)
 
 end
 
