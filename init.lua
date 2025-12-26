@@ -281,8 +281,6 @@ local function setupDAP()
 
   local dap = require('dap')
 
-  local vimDebugServerFullPath = { os.getenv("HOME") .. "/js-debug/out/src/vsDebugServer.js", "${port}" }
-  print(vimDebugServerFullPath)
 
   -- 1. Configure the Adapter
   dap.adapters["pwa-node"] = {
@@ -425,6 +423,12 @@ local function installPackages()
         "nvim-neotest/nvim-nio",
         "theHamsta/nvim-dap-virtual-text",
       },
+    },
+    {
+      "mxsdev/nvim-dap-vscode-js",
+      dependencies = {
+        "mfussenegger/nvim-dap"
+      }
     },
 
     -- 5. File Manager
