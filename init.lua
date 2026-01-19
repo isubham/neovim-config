@@ -124,6 +124,7 @@ local function setupLSP()
     vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
     vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
     vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, opts)
+    vim.keymap.set('n', '<Leader>d', vim.diagnostic.open_float, { desc = 'Open diagnostic float' })
   end
 
 
@@ -164,16 +165,16 @@ local function setupLSP()
   vim.api.nvim_create_autocmd("FileType", {
     pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
     callback = function()
+       vim.lsp.start({
+         name = "ts_ls",
+         cmd = { "typescript-language-server", "--stdio" },
+         root_dir = vim.fs.root(0, { "package.json", "tsconfig.json", ".git" }),
+       })
       -- vim.lsp.start({
-      --   name = "ts_ls",
-      --   cmd = { "typescript-language-server", "--stdio" },
+      --   name = "tsgo",
+      --   cmd = { "tsgo", "--lsp", "--stdio" },
       --   root_dir = vim.fs.root(0, { "package.json", "tsconfig.json", ".git" }),
       -- })
-      vim.lsp.start({
-        name = "tsgo",
-        cmd = { "tsgo", "--lsp", "--stdio" },
-        root_dir = vim.fs.root(0, { "package.json", "tsconfig.json", ".git" }),
-      })
     end,
   })
 
@@ -185,6 +186,21 @@ local function setupLSP()
     update_in_insert = false,
     severity_sort = true,
   })
+end
+
+local function setupTelescopeBufferSwitcher()
+  vim.keymap.set('n', '<leader><Tab>', function()
+    require('telescope.builtin').buffers({
+      sort_mru = true,              -- Sort by most recently used
+      ignore_current_buffer = true, -- Don't show current buffer
+      previewer = false,            -- Faster without preview
+      layout_config = {
+        height = 0.4,
+        width = 0.6,
+      },
+    })
+  end, { desc = 'Switch buffers' })
+
 end
 
 
@@ -204,6 +220,12 @@ local function setupTelescope()
         "node_modules",
         ".git/",
       },
+      hidden = true,  -- show dot files
+    },
+    pickers = {
+      find_files = {
+        hidden = true,  -- Show hidden files in find_files
+      },
     },
   })
 
@@ -222,6 +244,8 @@ local function setupTelescope()
   <C-v>  vertical
   <C-t>  tab
   ]]
+
+  setupTelescopeBufferSwitcher()
 end
 
 local function setupTreeSitter()
@@ -425,6 +449,10 @@ local function installPackages()
       },
     },
     {
+    "mason-org/mason.nvim",
+    opts = {}
+    },
+    {
       "mxsdev/nvim-dap-vscode-js",
       dependencies = {
         "mfussenegger/nvim-dap"
@@ -438,9 +466,71 @@ local function installPackages()
       opts = { open_for_directories = true },
     },
 
-    { 'wakatime/vim-wakatime', lazy = false }
+    -- time spend coding
+    { 'wakatime/vim-wakatime', lazy = false },
+
+    -- code folding
+    {
+      "kevinhwang91/nvim-ufo",
+      dependencies = {
+        "kevinhwang91/promise-async"
+      }
+    },
+
+    -- auto complete
+    {
+      'saghen/blink.cmp',
+      version = '*', -- or use latest release
+      dependencies = 'rafamadriz/friendly-snippets',
+      opts = {
+        keymap = { preset = 'default' }, -- Ctrl-space: trigger, Ctrl-y: accept
+        sources = {
+          default = { 'lsp', 'path', 'snippets', 'buffer' },
+        },
+        -- Enables auto-brackets for functions
+        completion = { accept = { auto_brackets = { enabled = true } } }
+      }
+    },
+
+    -- file tree
+    {
+      'stevearc/oil.nvim',
+      config = function()
+        require("oil").setup({
+          default_file_explorer = true,
+          view_options = {
+          show_hidden = true,
+        },
+    })
+
+  end,
+}
+
   })
 end
+
+local function setupCodeFolding()
+
+    vim.o.foldcolumn = '1' -- Optional: shows fold indicators in the gutter
+    vim.o.foldlevel = 99
+    vim.o.foldlevelstart = 99
+    vim.o.foldenable = true
+
+    -- Using ufo provider requires remapping zR and zM
+    vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
+    vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+
+    require('ufo').setup({
+        provider_selector = function(bufnr, filetype, buftype)
+            return {'treesitter', 'indent'} -- Use treesitter as main provider
+        end
+    })
+end
+
+local function setupOilFileTree() 
+  vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+end
+
 
 local function init()
   customizations()
@@ -448,11 +538,13 @@ local function init()
   setupLazy()
   installPackages()
   setupLSP()
+  -- setupDAP()
   setupTelescope()
   setupTreeSitter()
+  setupOilFileTree()
   setupYazi()
   setupColorScheme()
-  setupDAP()
+  setupCodeFolding()
 end
 
 init()
