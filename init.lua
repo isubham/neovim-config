@@ -4,6 +4,37 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+local is_vscode = vim.g.vscode ~= nil
+
+local VSCODE_ACTIONS = {
+  buffers = "workbench.action.showAllEditors",
+  close_editor = "workbench.action.closeActiveEditor",
+  code_action = "editor.action.quickFix",
+  definition = "editor.action.revealDefinition",
+  diagnostics_next = "editor.action.marker.next",
+  diagnostics_previous = "editor.action.marker.prev",
+  explorer = "workbench.view.explorer",
+  file_search = "workbench.action.quickOpen",
+  find_in_files = "workbench.action.findInFiles",
+  focus_down = "workbench.action.focusBelowGroup",
+  focus_left = "workbench.action.focusLeftGroup",
+  focus_right = "workbench.action.focusRightGroup",
+  focus_up = "workbench.action.focusAboveGroup",
+  hover = "editor.action.showHover",
+  implementation = "editor.action.goToImplementation",
+  new_file = "workbench.action.files.newUntitledFile",
+  next_editor = "workbench.action.nextEditor",
+  previous_editor = "workbench.action.previousEditor",
+  references = "editor.action.goToReferences",
+  rename = "editor.action.rename",
+  save = "workbench.action.files.save",
+  split_down = "workbench.action.splitEditorDown",
+  split_right = "workbench.action.splitEditorRight",
+  terminal = "workbench.action.terminal.toggleTerminal",
+  unfold_all = "editor.unfoldAll",
+  fold_all = "editor.foldAll",
+}
+
 
 local function customizations()
   --- registers
@@ -94,6 +125,56 @@ local function keyMaps()
   vim.keymap.set("n", "<leader>sl", function()
     vim.o.number = not vim.o.number
   end)
+end
+
+local function setupVSCode()
+  local vscode = require("vscode")
+
+  local function action(name)
+    return function()
+      vscode.action(name)
+    end
+  end
+
+  local function map(modes, lhs, action_name, description)
+    vim.keymap.set(modes, lhs, action(action_name), {
+      desc = description,
+      silent = true,
+    })
+  end
+
+  map("n", "<leader>w", VSCODE_ACTIONS.save, "Save")
+  map("n", "<leader>q", VSCODE_ACTIONS.close_editor, "Close editor")
+  map("n", "<leader>ws", VSCODE_ACTIONS.split_down, "Split editor down")
+  map("n", "<leader>wv", VSCODE_ACTIONS.split_right, "Split editor right")
+  map("n", "<leader>wq", VSCODE_ACTIONS.close_editor, "Close editor")
+  map("n", "<leader>h", VSCODE_ACTIONS.previous_editor, "Previous editor")
+  map("n", "<leader>l", VSCODE_ACTIONS.next_editor, "Next editor")
+  map("n", "<leader>d", VSCODE_ACTIONS.close_editor, "Close editor")
+  map("n", "<leader>wh", VSCODE_ACTIONS.focus_left, "Focus left editor group")
+  map("n", "<leader>wj", VSCODE_ACTIONS.focus_down, "Focus lower editor group")
+  map("n", "<leader>wk", VSCODE_ACTIONS.focus_up, "Focus upper editor group")
+  map("n", "<leader>wl", VSCODE_ACTIONS.focus_right, "Focus right editor group")
+  map("n", "<leader>tn", VSCODE_ACTIONS.new_file, "New editor")
+  map("n", "<leader>tc", VSCODE_ACTIONS.close_editor, "Close editor")
+  map("n", "<leader>th", VSCODE_ACTIONS.previous_editor, "Previous editor")
+  map("n", "<leader>tl", VSCODE_ACTIONS.next_editor, "Next editor")
+  map("n", "<leader>tt", VSCODE_ACTIONS.terminal, "Toggle terminal")
+  map("n", "<leader><leader>", VSCODE_ACTIONS.file_search, "Find files")
+  map("n", "<leader>fw", VSCODE_ACTIONS.find_in_files, "Find in files")
+  map("n", "<leader>fb", VSCODE_ACTIONS.buffers, "Show open editors")
+  map("n", "<leader>n", VSCODE_ACTIONS.explorer, "Show Explorer")
+  map("n", "-", VSCODE_ACTIONS.explorer, "Show Explorer")
+  map("n", "gd", VSCODE_ACTIONS.definition, "Go to definition")
+  map("n", "gr", VSCODE_ACTIONS.references, "Go to references")
+  map("n", "gi", VSCODE_ACTIONS.implementation, "Go to implementation")
+  map("n", "K", VSCODE_ACTIONS.hover, "Show hover")
+  map("n", "<leader>rn", VSCODE_ACTIONS.rename, "Rename symbol")
+  map({ "n", "x" }, "<leader>ca", VSCODE_ACTIONS.code_action, "Code action")
+  map("n", "[d", VSCODE_ACTIONS.diagnostics_previous, "Previous diagnostic")
+  map("n", "]d", VSCODE_ACTIONS.diagnostics_next, "Next diagnostic")
+  map("n", "zR", VSCODE_ACTIONS.unfold_all, "Unfold all")
+  map("n", "zM", VSCODE_ACTIONS.fold_all, "Fold all")
 end
 
 local function setupLSP()
@@ -232,7 +313,7 @@ local function setupTelescope()
   local builtin = require("telescope.builtin")
 
   vim.keymap.set("n", "<leader><leader>", builtin.find_files, { desc = "Find files" })
-  vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Live grep" })
+  vim.keymap.set("n", "<leader>fw", builtin.live_grep, { desc = "Live grep" })
   vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Buffers" })
   vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Help" })
   --[[
@@ -424,6 +505,7 @@ local function installPackages()
     -- 1. Theme
     {
       "EdenEast/nightfox.nvim",
+      cond = not is_vscode,
     },
 
     -- 2. Syntax & Parsing
@@ -431,17 +513,20 @@ local function installPackages()
       "nvim-treesitter/nvim-treesitter",
       build = ":TSUpdate",
       lazy = false,
+      cond = not is_vscode,
     },
 
     -- 3. Fuzzy Finder
     {
       "nvim-telescope/telescope.nvim",
       dependencies = { "nvim-lua/plenary.nvim" },
+      cond = not is_vscode,
     },
 
     -- 4. Debugging (DAP)
     {
       "mfussenegger/nvim-dap",
+      cond = not is_vscode,
       dependencies = {
         "rcarriga/nvim-dap-ui",
         "nvim-neotest/nvim-nio",
@@ -449,11 +534,13 @@ local function installPackages()
       },
     },
     {
-    "mason-org/mason.nvim",
-    opts = {}
+      "mason-org/mason.nvim",
+      cond = not is_vscode,
+      opts = {}
     },
     {
       "mxsdev/nvim-dap-vscode-js",
+      cond = not is_vscode,
       dependencies = {
         "mfussenegger/nvim-dap"
       }
@@ -463,15 +550,21 @@ local function installPackages()
     {
       "mikavilpas/yazi.nvim",
       event = "VeryLazy",
+      cond = not is_vscode,
       opts = { open_for_directories = true },
     },
 
     -- time spend coding
-    { 'wakatime/vim-wakatime', lazy = false },
+    {
+      'wakatime/vim-wakatime',
+      lazy = false,
+      cond = not is_vscode,
+    },
 
     -- code folding
     {
       "kevinhwang91/nvim-ufo",
+      cond = not is_vscode,
       dependencies = {
         "kevinhwang91/promise-async"
       }
@@ -481,6 +574,7 @@ local function installPackages()
     {
       'saghen/blink.cmp',
       version = '*', -- or use latest release
+      cond = not is_vscode,
       dependencies = 'rafamadriz/friendly-snippets',
       opts = {
         keymap = { preset = 'default' }, -- Ctrl-space: trigger, Ctrl-y: accept
@@ -495,6 +589,7 @@ local function installPackages()
     -- file tree
     {
       'stevearc/oil.nvim',
+      cond = not is_vscode,
       config = function()
         require("oil").setup({
           default_file_explorer = true,
@@ -532,11 +627,44 @@ local function setupOilFileTree()
 end
 
 
+
+local function setupKeyBinding()
+
+  local group = vim.api.nvim_create_augroup("ReactComponentFolding", { clear = true })
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = group,
+  pattern = { "javascriptreact", "typescriptreact" },
+  callback = function(opts)
+    vim.keymap.set("n", "<leader>cr", function()
+      vim.cmd("normal! zM")
+      local original_pos = vim.api.nvim_win_get_cursor(0)
+      vim.api.nvim_win_set_cursor(0, { 1, 0 })
+      local match = vim.fn.search([[\v^\s*return\s*(\(|<)]], "W")
+      if match > 0 then
+        vim.cmd("normal! zv")
+        vim.cmd("normal! zz")
+      else
+        vim.api.nvim_win_set_cursor(0, original_pos)
+      end
+    end, { buffer = opts.buf })
+  end,
+})
+
+end
+
+
 local function init()
   customizations()
-  keyMaps()
   setupLazy()
   installPackages()
+
+  if is_vscode then
+    setupVSCode()
+    return
+  end
+
+  keyMaps()
   setupLSP()
   -- setupDAP()
   setupTelescope()
@@ -545,6 +673,7 @@ local function init()
   setupYazi()
   setupColorScheme()
   setupCodeFolding()
+  setupKeyBinding()
 end
 
 init()
